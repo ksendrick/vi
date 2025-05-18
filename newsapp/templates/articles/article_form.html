@@ -1,0 +1,79 @@
+{% extends 'authapp/base.html' %}
+{% load static %}
+{% block content %}
+    <div class="container" id="container-body">
+        <h2 style="text-align: center">Создание статьи</h2>
+        <form method="post" enctype="multipart/form-data">
+            {% csrf_token %}
+            {{ form.as_p }}
+            <div class="d-flex justify-content-center">
+                <button class="btn btn-dark mt-4">Создать</button>
+            </div>
+            <p class="mute">* Статья будет опубликована после проверки</p>
+        </form>
+    </div>
+
+    <style>
+        #container-body {
+            margin-top: 170px;
+        }
+
+        p.mute {
+            text-align: end;
+            font-size: 11px;
+        }
+
+        @media (max-width: 576px) {
+            #container-body {
+                margin-top: 600px;
+            }
+        }
+    </style>
+
+    <script>
+        tinymce.init({
+            selector: '.tinymce',
+            plugins: 'lists link image preview help',
+            toolbar: 'undo redo | styleselect | bold italic | alignleft aligncenter alignright | bullist numlist outdent indent | header h1 h2 | link image | preview | help',
+            height: 500,
+            menubar: false,
+            branding: false,
+            language: 'ru',
+            images_upload_url: '/upload/',
+            automatic_uploads: true,
+            file_picker_types: 'image',
+            file_picker_callback: function (callback, value, meta) {
+                if (meta.filetype === 'image') {
+                    var input = document.createElement('input');
+                    input.setAttribute('type', 'file');
+                    input.setAttribute('accept', 'image/*');
+                    input.onchange = function () {
+                        var file = this.files[0];
+                        var reader = new FileReader();
+                        reader.onload = function () {
+                            var xhr = new XMLHttpRequest();
+                            var formData = new FormData();
+                            formData.append('file', file);
+                            formData.append('csrfmiddlewaretoken', '{{ csrf_token }}');
+
+                            xhr.open('POST', '/upload/');
+                            xhr.onload = function () {
+                                if (xhr.status === 200) {
+                                    var json = JSON.parse(xhr.responseText);
+                                    callback(json.location, {alt: file.name});
+                                } else {
+                                    console.error('Ошибка при загрузке изображения: ' + xhr.status);
+                                }
+                            };
+                            xhr.send(formData);
+                        };
+                        reader.readAsDataURL(file);
+                    };
+                    input.click();
+                }
+            }
+        });
+
+    </script>
+
+{% endblock %}

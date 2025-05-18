@@ -1,0 +1,213 @@
+{% extends "admin/index.html" %}
+{% load static %}
+
+{% block extrahead %}
+    {{ block.super }}
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        .admin-stats-container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 20px;
+            margin-bottom: 30px;
+            flex-direction: column;
+            align-items: center;
+            width: 1000px;
+        }
+
+        @media (max-width: 576px) {
+            .admin-stats-container {
+                display: flex;
+                gap: 20px;
+                margin-bottom: 30px;
+                flex-direction: column;
+                align-items: center;
+                width: 100%;
+            }
+
+        }
+
+        .stat-card {
+            background: white;
+            padding: 20px;
+            border-radius: 4px;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+            flex: 1;
+            min-width: 300px;
+        }
+
+        .chart-container {
+            background: white;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 4px;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+        }
+
+        .chart-title {
+            text-align: center;
+            font-weight: bold;
+            margin-bottom: 15px;
+        }
+
+        canvas {
+            max-height: 300px;
+            width: 100% !important;
+        }
+
+        #content-main {
+            width: auto;
+            float: none;
+        }
+
+        @media (max-width: 576px) {
+            canvas {
+                max-height: 200px;
+                width: 100% !important;
+            }
+
+            .chart-container {
+                padding: 0;
+                margin: 0;
+            }
+        }
+    </style>
+{% endblock %}
+
+{% block content %}
+    <div class="admin_index">
+        {{ block.super }}
+        <div class="admin-stats-container">
+            <h1>Статистика за последние 5 месяцев</h1>
+            <div class="custom-admin-header">
+                <div class="chart-container">
+                    <div class="chart-title">Статьи пользователей</div>
+                    <canvas id="articleChart" height="300"></canvas>
+                </div>
+
+                <div class="chart-container">
+                    <div class="chart-title">Новости</div>
+                    <canvas id="newsChart" height="300"></canvas>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            // Article Chart
+            const articleCtx = document.getElementById('articleChart');
+            if (articleCtx) {
+                new Chart(articleCtx, {
+                    type: 'bar',
+                    data: {
+                        labels: {{ month_labels|safe }},
+                        datasets: [{
+                            label: 'Статьи',
+                            data: {{ article_data|safe }},
+                            backgroundColor: 'rgba(255, 99, 132, 0.7)',
+                            borderColor: 'rgba(255, 99, 132, 1)',
+                            borderWidth: 1
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        scales: {
+                            y: {
+                                beginAtZero: true,
+                                ticks: {
+                                    precision: 0
+                                },
+                                title: {
+                                    display: true,
+                                    text: 'Количество'
+                                }
+                            },
+                            x: {
+                                title: {
+                                    display: true,
+                                    text: 'Месяц'
+                                }
+                            }
+                        },
+                        plugins: {
+                            legend: {
+                                display: false,
+                            },
+                            tooltip: {
+                                callbacks: {
+                                    label: function (context) {
+                                        return context.dataset.label + ': ' + context.raw;
+                                    }
+                                }
+                            }
+                        }
+                    }
+                });
+            }
+
+            // News Chart
+            const newsCtx = document.getElementById('newsChart');
+            if (newsCtx) {
+                new Chart(newsCtx, {
+                    type: 'bar',
+                    data: {
+                        labels: {{ month_labels|safe }},
+                        datasets: [{
+                            label: 'Новости',
+                            data: {{ news_data|safe }},
+                            backgroundColor: 'rgba(54, 162, 235, 0.7)',
+                            borderColor: 'rgba(54, 162, 235, 1)',
+                            borderWidth: 1
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        scales: {
+                            y: {
+                                beginAtZero: true,
+                                ticks: {
+                                    precision: 0
+                                },
+                                title: {
+                                    display: true,
+                                    text: 'Количество'
+                                }
+                            },
+                            x: {
+                                title: {
+                                    display: true,
+                                    text: 'Месяц'
+                                }
+                            }
+                        },
+                        plugins: {
+                            legend: {
+                                display: false,
+                            },
+                            tooltip: {
+                                callbacks: {
+                                    label: function (context) {
+                                        return context.dataset.label + ': ' + context.raw;
+                                    }
+                                }
+                            }
+                        }
+                    }
+                });
+            }
+        });
+    </script>
+{% endblock %}
+{% block sidebar %}
+    <div class="custom-module">
+        <h2>Быстрые действия</h2>
+        <ul>
+            <li><a href="/">На сайт</a></li>
+        </ul>
+    </div>
+    {{ block.super }}
+{% endblock %}

@@ -1,0 +1,12 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Статья опубликована</title>
+</head>
+<body>
+<h1>{{ user.last_name }} {{ user.first_name }},</h1> <h2>Ваша статья "<strong>{{ article.name }}</strong>" была успешно опубликована.</h2>
+    <p>Теперь ее могут видеть все пользователи нашего сайта.</p>
+    <p>Ссылка на статью: <a href="{{ site_url }}{% url 'newsapp:article_detail' article.id %}">Перейти к статье</a></p>
+    <p>С уважением,<br>Вкусные Исследования.</p>
+</body>
+</html>

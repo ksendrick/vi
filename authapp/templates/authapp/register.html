@@ -1,0 +1,32 @@
+{% extends 'authapp/base.html' %}
+{% load static %}
+{% block content %}
+    <div class="container" id="container-body">
+        <h2 style="text-align: center">Регистрация</h2>
+        <form method="post" enctype="multipart/form-data">
+            {% csrf_token %}
+            {{ form.as_p }}
+            <div class="d-flex justify-content-center">
+                <button class="btn btn-dark mt-4">Зарегистрироваться</button>
+            </div>
+        </form>
+    </div>
+    <script src="{% static 'js/jquery.js' %}"></script>
+    <script src="{% static 'js/inputmask.js' %}"></script>
+    <script src="{% static 'js/jquery.inputmask.js' %}"></script>
+    <script>
+        $(document).ready(function () {
+            $("#id_phone_number").inputmask("+7 (999)-999-99-99");
+        });
+    </script>
+
+
+    <style>
+        @media (max-width: 576px) {
+            #container-body {
+                margin-top: 450px;
+            }
+        }
+
+    </style>
+{% endblock %}

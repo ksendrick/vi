@@ -1,0 +1,47 @@
+{% extends 'mainapp/base.html' %}
+{% load static %}
+{% block content %}
+    <div class="container" id="container-body">
+        <form method="post" class="mb-3 d-flex flex-column align-items-start" style="gap: 5px">
+            {% csrf_token %}
+            <h3>Выберите теги:</h3>
+            <div class="d-flex flex-wrap" style="gap: 5px">
+                {% for tag in all_tags %}
+                    <label class="tags">
+                        <input type="checkbox" name="tags" value="{{ tag.id }}"
+                               {% if tag.id in current_tag_ids|stringformat:'s' %}checked{% endif %}>
+                        {{ tag.name|lower }}
+                    </label>
+                {% endfor %}
+            </div>
+            <button type="submit" class="btn btn-dark">Сохранить теги</button>
+        </form>
+        <a href="{% url 'mainapp:index' %}" id="button_cancel">Отмена</a>
+    </div>
+    <div class="article_view container">
+        <h4 style="text-align: center">Предварительный просмотр статьи</h4>
+        <h2 style="text-align: center" class="mt-4">{{ article.name }}</h2>
+        <div class="article_img mt-5">
+            <img src="{{ article.img.url }}" alt="{{ article.name }}">
+            <div class="d-flex flex-column">
+                <div class="avatar">
+                    <img src="{{ article.user.img.url }}"
+                         alt="Фото профиля {{ article.user.first_name }} {{ article.user.last_name }}">
+                    <div class="d-flex flex-column">
+                        <h4>{{ article.user.first_name }} {{ article.user.last_name }}</h4>
+                        <p>Автор</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="container pt-2">
+        <div class="desc">
+            {{ article.desc|safe }}
+        </div>
+        <div class="mt-4" style="opacity: 80%">
+            <p>{{ news.created_at }}</p>
+        </div>
+    </div>
+    <link rel="stylesheet" href="{% static 'css/container.css' %}">
+{% endblock %}

@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Приглашение на мероприятие</title>
+    <style>
+        body {
+            background-color: #f9f9f9;
+            margin: 0;
+            padding: 20px;
+            color: #333333;
+        }
+
+        .container {
+            background-color: #ffffff;
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.08);
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        h1 {
+            font-size: 24px;
+            margin-bottom: 20px;
+        }
+
+        p {
+            line-height: 1.6;
+            margin-bottom: 15px;
+        }
+
+        a.button {
+            background-color: #E07A5F;
+            transition: background-color 0.3s ease;
+            padding: 12px 25px;
+            color: white !important;
+            text-decoration: none;
+            border-radius: 6px;
+            display: inline-block;
+            font-weight: 600;
+            font-size: 16px;
+        }
+
+        a.button:hover {
+            background-color: #ca6e55;
+        }
+
+
+    </style>
+</head>
+<body>
+<div class="container">
+    <h1>Привет, <span class="highlight">{{ name }}</span>!</h1>
+    <p>У нас отличные новости! Вы официально приглашены на <span class="highlight">{{ event_title }}</span>. Мы очень
+        рады видеть вас!</p>
+    <p>Чтобы подтвердить ваше участие, просто нажмите на кнопку ниже:</p>
+    <p><a class="button" href="{{ confirmation_link }}">Подтвердить участие</a></p>
+    <p>С нетерпением ждем вас!</p>
+</div>
+</body>
+</html>

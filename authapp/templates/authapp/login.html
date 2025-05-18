@@ -1,0 +1,20 @@
+{% extends 'authapp/base.html' %}
+{% load static %}
+{% block content %}
+    <div class="container" id="container-body">
+        <h2 style="text-align: center">Авторизация</h2>
+        <form method="post">
+            {% csrf_token %}
+            {{ form.as_p }}
+            <div class="d-flex justify-content-center">
+                <button class="btn btn-dark mt-4">Войти</button>
+            </div>
+            <div class="register-form">
+                 <p>Нет аккаунта?</p>
+            <a href="{% url 'authapp:register' %}" class="button_register">Зарегистрируйтесь!</a>
+            </div>
+
+        </form>
+    </div>
+
+{% endblock %}

@@ -1,0 +1,163 @@
+{% extends 'mainapp/base.html' %}
+{% load static %}
+{% block content %}
+    <div class="container" id="container-body">
+        <div class="profile_banner"
+             style="background-image: url('{{ user.img_banner.url }}'); background-repeat: no-repeat; background-size: cover;">
+        </div>
+        <div class="profile_date">
+            <div class="profile_avatar">
+                <img src="{{ user.img.url }}" alt="Аватар">
+            </div>
+            <div class="profile__date-text w-100">
+                <div class="d-flex flex-column">
+                    <h5>{{ user.first_name }} {{ user.last_name }}</h5>
+                    <p>{{ user.username }}</p>
+                </div>
+                <a href="{% url 'mainapp:edit_profile' %}" class="btn btn-outline-dark">Редактировать профиль</a>
+            </div>
+        </div>
+    </div>
+
+    <div class="profile-favorites container mt-5 text-center">
+        <h3>Избранные рецепты {% if favorites %} ({{ favorites_count }}) {% endif %}</h3>
+    </div>
+    {% if favorites %}
+        <div class="recipe-list container mt-4">
+            {% for favorite in favorites %}
+                <a href="{% url 'recipesapp:recipe' favorite.recipe.id %}">
+                    <div class="recipe_card">
+                        <img src="{{ favorite.recipe.img.url }}" alt="{{ favorite.recipe.name }}">
+                        <div class="d-flex flex-column">
+                            <p>{{ favorite.recipe.category.name }} <span
+                                    class="emotion"></span> {{ favorite.recipe.kitchen.name }}
+                            </p>
+                            <h3 class="my-3">{{ favorite.recipe.name }}</h3>
+                            <div class="d-flex align-items-start" style="gap: 4px">
+                                <form method="post" class="me-3"
+                                      action="{% url 'recipesapp:toggle_favorite_profile' favorite.recipe.id %}">
+                                    {% csrf_token %}
+                                    <button type="submit" name="favorite" class="btn-favorite">
+                                        {% if favorite.recipe.id in favorite_recipes_ids %}
+                                            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20"
+                                                 fill="currentColor" class="bi bi-bookmark-fill"
+                                                 viewBox="0 0 18 18"
+                                                 id="fill">
+                                                <path d="M2 2v13.5a.5.5 0 0 0 .74.439L8 13.069l5.26 2.87A.5.5 0 0 0 14 15.5V2a2 2 0 0 0-2-2H4a2 2 0 0 0-2 2"/>
+                                            </svg> Удалить из избранного
+                                        {% else %}
+                                            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20"
+                                                 fill="currentColor" class="bi bi-bookmark" viewBox="0 0 18 18"
+                                                 id="no-fill">
+                                                <path d="M2 2a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v13.5a.5.5 0 0 1-.777.416L8 13.101l-5.223 2.815A.5.5 0 0 1 2 15.5zm2-1a1 1 0 0 0-1 1v12.566l4.723-2.482a.5.5 0 0 1 .554 0L13 14.566V2a1 1 0 0 0-1-1z"/>
+                                            </svg> Добавить в избранное
+                                        {% endif %}
+                                    </button>
+                                </form>
+                                <div class="d-flex flex-row" style="gap: 4px">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22"
+                                         fill="currentColor"
+                                         class="bi bi-stopwatch" viewBox="0 0 16 16">
+                                        <path d="M8.5 5.6a.5.5 0 1 0-1 0v2.9h-3a.5.5 0 0 0 0 1H8a.5.5 0 0 0 .5-.5z"/>
+                                        <path d="M6.5 1A.5.5 0 0 1 7 .5h2a.5.5 0 0 1 0 1v.57c1.36.196 2.594.78 3.584 1.64l.012-.013.354-.354-.354-.353a.5.5 0 0 1 .707-.708l1.414 1.415a.5.5 0 1 1-.707.707l-.353-.354-.354.354-.013.012A7 7 0 1 1 7 2.071V1.5a.5.5 0 0 1-.5-.5M8 3a6 6 0 1 0 .001 12A6 6 0 0 0 8 3"/>
+                                    </svg>
+                                    <p>{{ favorite.recipe.time }}</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </a>
+            {% endfor %}
+        </div>
+    {% else %}
+        <div class="empty-favorites container mt-4">
+            <h5>Пока здесь пусто... Но это легко исправить!</h5>
+            <a href="{% url 'recipesapp:index' %}" class="btn btn-dark">
+                Найти рецепты
+            </a>
+        </div>
+    {% endif %}
+    <div class="articles container mt-4">
+    <h3 class="text-center">Статьи</h3>
+    <ul class="nav nav-tabs mt-3">
+        <li class="nav-item">
+            <a class="nav-link {% if article_status == 'published' %}active{% endif %}"
+               href="{% url 'mainapp:profile' %}?article_status=published">Опубликованные</a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link {% if article_status == 'draft' %}active{% endif %}"
+               href="{% url 'mainapp:profile' %}?article_status=draft">Черновики</a>
+        </li>
+        <li class="nav-item">
+            <a href="{% url 'newsapp:article_create' %}" class="nav-link">Добавить статью</a>
+        </li>
+    </ul>
+
+    <div class="articles_profile mt-4">
+        {% if user_articles %}
+            <div class="articles_cards mt-4">
+                <div class="row mt-2">
+                    {% for article in user_articles %}
+                        <div class="col-md-4">
+                            <a href="{% if article.status == 'news' %}{% url 'newsapp:article_edit' article.id %}{% else %}{% url 'newsapp:article_detail' article.id %}{% endif %}">
+                                <div class="card_index mb-4 {% if article.status == 'news' %}draft{% endif %}"
+                                     style="background-image: url('{{ article.img.url }}'); background-repeat: no-repeat; background-size: cover;">
+                                    <div class="d-flex flex-column align-items-center h-100 justify-content-between">
+                                        <p>
+                                            {% for tag_news in article.tagsnews_set.all %}
+                                                {% if forloop.counter <= 2 %}
+                                                    {{ tag_news.tags.name|lower }}
+                                                    {% if forloop.counter == 1 and article.tagsnews_set.count > 1 %}
+                                                        <span class="emotion"></span>
+                                                    {% endif %}
+                                                    {% if not forloop.last %}{% endif %}
+                                                {% endif %}
+                                            {% endfor %}
+                                        </p>
+                                        <h3>{{ article.name }}</h3>
+                                        <p>{% if article.status == 'news' %}Нажмите чтобы отредактировать{% else %}Автор: {{ article.user.last_name }} {{ article.user.first_name }}{% endif %}</p>
+                                    </div>
+                                </div>
+                            </a>
+                        </div>
+                    {% endfor %}
+                </div>
+            </div>
+        {% else %}
+            <h5 class="mt-4">
+                {% if article_status == 'published' %}
+                    У вас есть что рассказать? Поделитесь своими мыслями и идеями с миром! Создайте свою статью и
+                    дайте другим возможность узнать ваше мнение.
+                {% else %}
+                    У вас пока нет черновиков. Начните писать!
+                {% endif %}
+            </h5>
+            <a href="{% url 'newsapp:article_create' %}" class="btn btn-dark">Добавить статью</a>
+        {% endif %}
+    </div>
+</div>
+
+    {% if recent_likes %}
+        <div class="history container mt-5">
+            <hr>
+            <h3>Вам понравилось</h3>
+            <div class="d-flex flex-column">
+                {% for like in liked_news %}
+                    <ul>
+                        <li>
+                            <a href="{% url 'newsapp:news_detail' like.id %}">{{ like.name }}</a>
+                        </li>
+                    </ul>
+                {% endfor %}
+                {% for like in liked_articles %}
+                    <ul>
+                        <li>
+                            <a href="{% url 'newsapp:article_detail' like.id %}">{{ like.name }}</a>
+                        </li>
+                    </ul>
+                {% endfor %}
+            </div>
+        </div>
+    {% endif %}
+
+{% endblock %}

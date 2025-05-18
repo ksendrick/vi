@@ -1,0 +1,52 @@
+{% extends 'mainapp/base.html' %}
+{% load static %}
+{% block content %}
+    <div class="container" id="container-body">
+        <div class="profile_banner" style="background-image: url('{{ profile_user.img_banner.url }}')">
+        </div>
+        <div class="profile_date">
+            <div class="profile_avatar">
+                <img src="{{ profile_user.img.url }}" alt="Аватар">
+            </div>
+            <div class="profile__date-text w-100">
+                <div class="d-flex flex-column">
+                    <h5>{{ profile_user.first_name }} {{ profile_user.last_name }}</h5>
+                    <p>{{ profile_user.username }}</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="container text-center my-4">
+        <h3>Статьи автора ({{ articles_count }}) </h3>
+    </div>
+    <div class="container mt-2">
+        <div class="articles_cards">
+            <div class="row mt-2">
+                {% for article in user_articles %}
+                    <div class="col-md-4">
+                        <a href="{% url 'newsapp:article_detail' article.id %}">
+                            <div class="card_index mb-4" style="background-image: url('{{ article.img.url }}')">
+                                <div class="d-flex flex-column align-items-center h-100 justify-content-between ">
+                                    <p>
+                                        {% for tag_news in article.tagsnews_set.all %}
+                                            {% if forloop.counter <= 2 %}
+                                                {{ tag_news.tags.name|lower }}
+                                                {% if forloop.counter == 1 and article.tagsnews_set.count > 1 %}
+                                                    <span class="emotion"></span>
+                                                {% endif %}
+                                                {% if not forloop.last %}{% endif %}
+                                            {% endif %}
+                                        {% endfor %}
+                                    </p>
+                                    <h3>{{ article.name }}</h3>
+                                    <p>Автор: {{ article.user.last_name }} {{ article.user.first_name }}</p>
+                                </div>
+                            </div>
+                        </a>
+                    </div>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+{% endblock %}

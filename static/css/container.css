@@ -1,0 +1,27 @@
+.container {
+    background-color: white;
+    padding: 40px 20px;
+}
+
+#container-body {
+    margin-top: 50px;
+}
+
+@media (max-width: 576px) {
+    .container {
+        padding: 30px 20px;
+    }
+}
+
+body {
+    background-color: #f3f3f3;
+}
+
+footer .container {
+    background-color: #212529;
+    padding: 0 20px;
+}
+
+footer{
+    margin-top: 0;
+}

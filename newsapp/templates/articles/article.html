@@ -1,0 +1,96 @@
+{% extends 'mainapp/base.html' %}
+{% load static %}
+{% block content %}
+    <div class="container" id="container-body">
+        <div class="sort">
+            <form method="GET" class="search-form">
+                <div class="filter-group search-input">
+                    <input type="text" name="search" id="search" placeholder="Поиск записей..."
+                           value="{{ search_term }}">
+                    {% if search_term %}
+                        <button type="button" class="clear-input" data-target="search">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" fill="currentColor"
+                                 class="bi bi-x" viewBox="0 0 16 16">
+                                <path d="M4.646 4.646a.5.5 0 0 1 .708 0L8 7.293l2.646-2.647a.5.5 0 0 1 .708.708L8.707 8l2.647 2.646a.5.5 0 0 1-.708.708L8 8.707l-2.646 2.647a.5.5 0 0 1-.708-.708L7.293 8 4.646 5.354a.5.5 0 0 1 0-.708"/>
+                            </svg>
+                        </button>
+                    {% endif %}
+                    <button type="submit" class="apply-button">Поиск</button>
+                </div>
+                <input type="hidden" name="sort" value="{{ sort_by }}">
+                <input type="hidden" name="tag" value="{{ selected_tag }}">
+
+            </form>
+
+            <form method="GET" class="filter-form">
+                <div class="filter-group">
+                    <select name="tag" id="tag">
+                        <option value="">Все теги</option>
+                        {% for tag in tags %}
+                            <option value="{{ tag.id }}"
+                                    {% if selected_tag|stringformat:'i' == tag.id|stringformat:'i' %}selected{% endif %}>{{ tag.name|lower }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <input type="hidden" name="sort" value="{{ sort_by }}">
+                <input type="hidden" name="search" value="{{ search_term }}">
+                <button type="submit" class="btn btn-dark apply-button">Применить</button>
+            </form>
+        </div>
+
+        <div class="mt-1">
+            <form method="GET" class="sort-form">
+                <div class="sort_group">
+                    <label for="sort">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" fill="currentColor"
+                             class="bi bi-filter-left" viewBox="0 0 16 16">
+                            <path d="M2 10.5a.5.5 0 0 1 .5-.5h3a.5.5 0 0 1 0 1h-3a.5.5 0 0 1-.5-.5m0-3a.5.5 0 0 1 .5-.5h7a.5.5 0 0 1 0 1h-7a.5.5 0 0 1-.5-.5m0-3a.5.5 0 0 1 .5-.5h11a.5.5 0 0 1 0 1h-11a.5.5 0 0 1-.5-.5"/>
+                        </svg>
+                    </label>
+                    <select name="sort" id="sort" onchange="this.form.submit()">
+                        <option value="relevant" {% if sort_by == 'relevant' %}selected{% endif %}>По релевантности
+                        </option>
+                        <option value="date" {% if sort_by == 'date' %}selected{% endif %}>По дате добавления</option>
+                        <option value="favorites" {% if sort_by == 'favorites' %}selected{% endif %}>Самые популярные
+                        </option>
+                    </select>
+                </div>
+                <input type="hidden" name="search" value="{{ search_term }}">
+                <input type="hidden" name="tag" value="{{ selected_tag }}">
+            </form>
+        </div>
+        <hr>
+        {% if article_list %}
+            <div class="articles_cards mt-3">
+                <div class="row mt-2">
+                    {% for article in article_list %}
+                        <div class="col-md-4">
+                            <a href="{% url 'newsapp:article_detail' article.id %}">
+                                <div class="card_index mb-4"
+                                     style="background-image: url('{{ article.img.url }}'); background-repeat: no-repeat; background-size: cover;">
+                                    <div class="d-flex flex-column align-items-center h-100 justify-content-between ">
+                                        <p>
+                                            {% for tag_news in article.tagsnews_set.all %}
+                                                {% if forloop.counter <= 2 %}
+                                                    {{ tag_news.tags.name|lower }}
+                                                    {% if forloop.counter == 1 and article.tagsnews_set.count > 1 %}
+                                                        <span class="emotion"></span>
+                                                    {% endif %}
+                                                    {% if not forloop.last %}{% endif %}
+                                                {% endif %}
+                                            {% endfor %}
+                                        </p>
+                                        <h3>{{ article.name }}</h3>
+                                        <p>Автор: {{ article.user.last_name }} {{ article.user.first_name }}</p>
+                                    </div>
+                                </div>
+                            </a>
+                        </div>
+                    {% endfor %}
+                </div>
+            </div>
+        {% else %}
+            <p>Записи не найдены.</p>
+        {% endif %}
+    </div>
+{% endblock %}

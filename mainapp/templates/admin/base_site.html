@@ -1,0 +1,21 @@
+{% extends "admin/base.html" %}
+{% load static %}
+
+{% block title %}Вкусные Исследования | {{ site_title|default:_('Django site admin') }}{% endblock %}
+
+{% block extrastyle %}
+    {{ block.super }}
+    <link rel="icon" href="{% static 'img/logo_web.png' %}" type="image/png">
+    <link rel="stylesheet" href="{% static 'css/admin.css' %}">
+{% endblock %}
+
+{% block branding %}
+    <h1 id="site-name">
+        <a href="{% url 'admin:index' %}">
+            <img src="{% static '/img/logo_white.png' %}" alt="Логотип" class="responsive-img">
+            Панель администратора
+        </a>
+    </h1>
+{% endblock %}
+
+{% block bodyclass %}django-admin{% endblock %}

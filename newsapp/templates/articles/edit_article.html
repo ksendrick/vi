@@ -1,0 +1,101 @@
+{% extends 'authapp/base.html' %}
+{% load static %}
+{% block content %}
+<div class="container" id="container-body">
+    <h2 class="text-center my-4">Редактирование статьи</h2>
+    
+    <form method="post" enctype="multipart/form-data" class="mb-4">
+        {% csrf_token %}
+        
+        <div class="mb-3">
+            <label for="{{ form.name.id_for_label }}" class="form-label">Название статьи</label>
+            {{ form.name }}
+        </div>
+        
+        <div class="mb-3">
+            <label for="{{ form.desc.id_for_label }}" class="form-label">Описание</label>
+            {{ form.desc }}
+        </div>
+        
+        <div class="mb-3">
+            <label for="{{ form.img.id_for_label }}" class="form-label">Изображение</label>
+            {% if article.img %}
+                <img src="{{ article.img.url }}" alt="{{ article.name }}" 
+                     class="img-thumbnail d-block mt-2 mb-3" style="max-height: 150px;">
+            {% endif %}
+            {{ form.img }}
+        </div>
+        
+        <div class="d-flex justify-content-center mt-4">
+            <button type="submit" class="btn btn-dark px-4">Сохранить</button>
+        </div>
+        
+        <p class="mute">* Статья будет опубликована после проверки</p>
+        
+        {{ form.media }}
+    </form>
+</div>
+    <style>
+        #container-body {
+            margin-top: 300px;
+        }
+
+        p.mute {
+            text-align: end;
+            font-size: 12px;
+        }
+
+        @media (max-width: 576px) {
+            #container-body {
+                margin-top: 600px;
+            }
+        }
+    </style>
+
+    <script>
+        tinymce.init({
+            selector: '.tinymce',
+            plugins: 'lists link image preview help',
+            toolbar: 'undo redo | styleselect | bold italic | alignleft aligncenter alignright | bullist numlist outdent indent | header h1 h2 | link image | preview | help',
+            height: 500,
+            menubar: false,
+            branding: false,
+            language: 'ru',
+            images_upload_url: '/upload/',
+            automatic_uploads: true,
+            file_picker_types: 'image',
+            file_picker_callback: function (callback, value, meta) {
+                if (meta.filetype === 'image') {
+                    var input = document.createElement('input');
+                    input.setAttribute('type', 'file');
+                    input.setAttribute('accept', 'image/*');
+                    input.onchange = function () {
+                        var file = this.files[0];
+                        var reader = new FileReader();
+                        reader.onload = function () {
+                            var xhr = new XMLHttpRequest();
+                            var formData = new FormData();
+                            formData.append('file', file);
+                            formData.append('csrfmiddlewaretoken', '{{ csrf_token }}');
+
+                            xhr.open('POST', '/upload/');
+                            xhr.onload = function () {
+                                if (xhr.status === 200) {
+                                    var json = JSON.parse(xhr.responseText);
+                                    callback(json.location, {alt: file.name});
+                                } else {
+                                    console.error('Ошибка при загрузке изображения: ' + xhr.status);
+                                }
+                            };
+                            xhr.send(formData);
+                        };
+                        reader.readAsDataURL(file);
+                    };
+                    input.click();
+                }
+            }
+        });
+
+    </script>
+
+{% endblock %}

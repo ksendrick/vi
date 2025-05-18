@@ -1,0 +1,48 @@
+{% extends 'mainapp/base.html' %}
+{% load static %}
+{% block content %}
+    <div class="container" id="container-body">
+        {% if unread_notifications_count > 0 %}
+            <div class="d-flex flex-row justify-content-between align-items-center">
+                <h2 class="mb-4">Новые уведомления ({{ unread_notifications_count }})</h2>
+                <a href="{% url 'mainapp:mark_all_as_read' %}" class="btn btn-outline-dark">Отметить все как
+                    прочитанные</a>
+            </div>
+        {% else %}
+            <h2>Уведомления</h2>
+        {% endif %}
+        {% if unread_notifications_count > 0 %}
+            <div class="unread-notifications-section mb-4">
+                {% for notification in notifications %}
+                    {% if not notification.is_read %}
+                        <a href="{% url 'newsapp:article_detail_with_notification' notification.article.id notification.id %}"
+                           class="notification-link {% if not notification.is_read %}unread{% endif %}">
+                            <div class="notification-item" style="margin: 30px 0">
+                                {% if not notification.is_read %}
+                                    <span class="notification_view translate-middle"></span>
+                                {% endif %}
+                                <p>{{ notification.message }}</p>
+                            </div>
+                        </a>
+                        <hr>
+                    {% endif %}
+                {% endfor %}
+            </div>
+        {% endif %}
+        <div class="read-notifications-section">
+            {% for notification in notifications %}
+                {% if notification.is_read %}
+                    <a href="{% url 'mainapp:notification_detail' notification.id %}"
+                       class="notification-link read-notification">
+                        <div class="notification-item mt-3">
+                            <p>{{ notification.message }}</p>
+                        </div>
+                    </a>
+                {% endif %}
+            {% empty %}
+                <p class="text-muted">Нет уведомлений.</p>
+            {% endfor %}
+        </div>
+    </div>
+{% endblock %}
+

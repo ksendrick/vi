@@ -1,0 +1,28 @@
+{% extends 'authapp/base.html' %}
+{% load static %}
+{% block content %}
+    <div class="container" id="container-body">
+        <h2 style="text-align: center">Подтверждение email</h2>
+        {% if error %}
+            <div class="alert alert-danger">{{ error }}</div>
+        {% endif %}
+        <form method="post">
+            {% csrf_token %}
+            <div class="form-group">
+                <label for="confirmation_code">Введите код из письма:</label>
+                <input type="text" class="form-control" id="confirmation_code"
+                       name="confirmation_code" required>
+            </div>
+            <div class="d-flex justify-content-center align-items-center" style="gap: 2vh">
+                <button class="btn btn-dark mt-4" type="submit">Подтвердить</button>
+                <a href="{% url 'mainapp:index' %}"  class="mt-4 text-dark" >Продолжить без подтверждения</a>
+            </div>
+        </form>
+    </div>
+
+    <style>
+        .container {
+            padding: 100px 20px;
+        }
+    </style>
+{% endblock %}

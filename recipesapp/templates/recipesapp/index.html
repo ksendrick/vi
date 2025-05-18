@@ -1,0 +1,127 @@
+{% extends 'mainapp/base.html' %}
+{% block content %}
+    <div class="container" id="container-body" xmlns="http://www.w3.org/1999/html">
+        <div class="sort">
+            <form method="GET" class="search-form">
+                <div class="filter-group search-input">
+                    <input type="text" name="search" id="search" placeholder="Ингредиенты, название рецептов"
+                           value="{{ search_term }}">
+                    {% if search_term %}
+                        <button type="button" class="clear-input" data-target="search">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" fill="currentColor"
+                                 class="bi bi-x" viewBox="0 0 16 16">
+                                <path d="M4.646 4.646a.5.5 0 0 1 .708 0L8 7.293l2.646-2.647a.5.5 0 0 1 .708.708L8.707 8l2.647 2.646a.5.5 0 0 1-.708.708L8 8.707l-2.646 2.647a.5.5 0 0 1-.708-.708L7.293 8 4.646 5.354a.5.5 0 0 1 0-.708"/>
+                            </svg>
+                        </button>
+                    {% endif %}
+                    <button type="submit" class="apply-button">Поиск</button>
+                </div>
+            </form>
+            <form method="GET" class="filter-form">
+                <div class="filter-group">
+                    <select name="category" id="category">
+                        <option value="">Любая категория</option>
+                        {% for category in categories %}
+                            <option value="{{ category.id }}"
+                                    {% if selected_category == category.id %}selected{% endif %}>
+                                {{ category.name }}
+                            </option>
+                        {% endfor %}
+                    </select>
+                </div>
+
+                <div class="filter-group">
+                    <select name="kitchen" id="kitchen">
+                        <option value="">Любая кухня</option>
+                        {% for kitchen in kitchens %}
+                            <option value="{{ kitchen.id }}" {% if selected_kitchen == kitchen.id %}selected{% endif %}>
+                                {{ kitchen.name }}
+                            </option>
+                        {% endfor %}
+                    </select>
+                </div>
+
+                <button type="submit" class="btn btn-dark apply-button">Применить</button>
+            </form>
+        </div>
+        <div class="mt-1">
+            <form method="GET" class="sort-form">
+                <div class="sort_group">
+                    <label for="sort">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" fill="currentColor"
+                             class="bi bi-filter-left" viewBox="0 0 16 16">
+                            <path d="M2 10.5a.5.5 0 0 1 .5-.5h3a.5.5 0 0 1 0 1h-3a.5.5 0 0 1-.5-.5m0-3a.5.5 0 0 1 .5-.5h7a.5.5 0 0 1 0 1h-7a.5.5 0 0 1-.5-.5m0-3a.5.5 0 0 1 .5-.5h11a.5.5 0 0 1 0 1h-11a.5.5 0 0 1-.5-.5"/>
+                        </svg>
+                    </label>
+                    <select name="sort" id="sort" onchange="this.form.submit()">
+                        <option value="relevant" {% if sort_by == 'relevant' %}selected{% endif %}>По релевантности
+                        </option>
+                        <option value="date" {% if sort_by == 'date' %}selected{% endif %}>По дате добавления</option>
+                        <option value="favorites" {% if sort_by == 'favorites' %}selected{% endif %}>Самые популярные
+                        </option>
+                    </select>
+                </div>
+
+
+                <input type="hidden" name="category" value="{{ selected_category }}">
+                <input type="hidden" name="kitchen" value="{{ selected_kitchen }}">
+                <input type="hidden" name="ingredient" value="{{ ingredient_filter }}">
+                <input type="hidden" name="name" value="{{ name_filter }}">
+
+            </form>
+        </div>
+        <hr>
+        {% if no_recipes_found %}
+            <p>Рецепты не найдены.</p>
+        {% else %}
+            <div class="recipe-list">
+                {% for recipe in recipes %}
+                    <a href="{% url 'recipesapp:recipe' recipe.id %}">
+                        <div class="recipe_card">
+                            <img src="{{ recipe.img.url }}" alt="{{ recipe.name }}">
+                            <div class="d-flex flex-column">
+                                <p>{{ recipe.category.name }} <span class="emotion"></span> {{ recipe.kitchen.name }}
+                                </p>
+                                <h3 class="my-3">{{ recipe.name }}</h3>
+                                <div class="d-flex align-items-start" style="gap: 4px">
+
+                                    <form method="post" class="me-3"
+                                          action="{% url 'recipesapp:toggle_favorite' recipe.id %}">
+                                        {% csrf_token %}
+                                        <button type="submit" name="favorite" class="btn-favorite">
+                                            {% if recipe.id in favorite_recipes_ids %}
+                                                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20"
+                                                     fill="currentColor" class="bi bi-bookmark-fill"
+                                                     viewBox="0 0 18 18"
+                                                     id="fill">
+                                                    <path d="M2 2v13.5a.5.5 0 0 0 .74.439L8 13.069l5.26 2.87A.5.5 0 0 0 14 15.5V2a2 2 0 0 0-2-2H4a2 2 0 0 0-2 2"/>
+                                                </svg> Удалить из избранного
+                                            {% else %}
+                                                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20"
+                                                     fill="currentColor" class="bi bi-bookmark" viewBox="0 0 18 18"
+                                                     id="no-fill">
+                                                    <path d="M2 2a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v13.5a.5.5 0 0 1-.777.416L8 13.101l-5.223 2.815A.5.5 0 0 1 2 15.5zm2-1a1 1 0 0 0-1 1v12.566l4.723-2.482a.5.5 0 0 1 .554 0L13 14.566V2a1 1 0 0 0-1-1z"/>
+                                                </svg> Добавить в избранное
+                                            {% endif %}
+                                            <p>({{ recipe.favorites_count }})</p>
+                                        </button>
+                                    </form>
+                                    <div class="d-flex flex-row" style="gap: 4px">
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22"
+                                             fill="currentColor"
+                                             class="bi bi-stopwatch" viewBox="0 0 16 16">
+                                            <path d="M8.5 5.6a.5.5 0 1 0-1 0v2.9h-3a.5.5 0 0 0 0 1H8a.5.5 0 0 0 .5-.5z"/>
+                                            <path d="M6.5 1A.5.5 0 0 1 7 .5h2a.5.5 0 0 1 0 1v.57c1.36.196 2.594.78 3.584 1.64l.012-.013.354-.354-.354-.353a.5.5 0 0 1 .707-.708l1.414 1.415a.5.5 0 1 1-.707.707l-.353-.354-.354.354-.013.012A7 7 0 1 1 7 2.071V1.5a.5.5 0 0 1-.5-.5M8 3a6 6 0 1 0 .001 12A6 6 0 0 0 8 3"/>
+                                        </svg>
+                                        <p>{{ recipe.time }}</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </a>
+                {% endfor %}
+            </div>
+        {% endif %}
+    </div>
+{% endblock %}
+

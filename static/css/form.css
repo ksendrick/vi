@@ -1,0 +1,64 @@
+form {
+    padding: 0 50px 0 50px;
+    width: 100%;
+}
+
+@media (max-width: 576px) {
+    form {
+        padding: 0 5px;
+    }
+}
+
+form button {
+    padding: 6px 15px;
+}
+
+form p {
+    margin-top: 2vh;
+}
+
+.container {
+    background-color: rgb(255, 255, 255);
+    padding: 50px 20px;
+    border-radius: 5px;
+}
+
+#container-body {
+    margin-top: 55px;
+}
+
+@media (max-width: 576px) {
+    .container {
+        padding: 30px 10px;
+    }
+}
+
+body {
+    background-color: #f3f3f3;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+@media (max-width: 576px) {
+    body {
+        height: 500px;
+    }
+}
+
+.form-check-input{
+    border: 1px solid rgba(43, 47, 50, 0.6);
+    border-radius: 5px;
+    padding: 4px 8px;
+}
+
+.form-check-input:checked {
+    background-color:  rgba(33, 37, 41, 0.87);
+    border-color:  rgba(33, 37, 41, 0.87);
+}
+
+
+input[type="checkbox"] .form-check-input {
+    accent-color: rgba(33, 37, 41, 0.87);
+    border-radius: 5px;
+}

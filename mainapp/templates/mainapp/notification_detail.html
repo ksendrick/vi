@@ -1,0 +1,29 @@
+{% extends 'mainapp/base.html' %}
+
+{% block content %}
+    <div class="container" id="container-body">
+        <div class="d-flex flex-row" style="gap: 1vh">
+            <h2>Уведомление</h2> <span class="notification-status">
+                    {% if notification.is_read %}
+                        <i class="fas fa-check-circle text-success"></i> Прочитано
+                    {% else %}
+                        <i class="fas fa-exclamation-circle text-primary"></i> Новое
+                    {% endif %}
+                </span>
+        </div>
+        <h5>{{ notification.message }}</h5>
+
+        {% if notification.article %}
+            <div class="article-link mt-3">
+                <a href="{% url 'newsapp:article_detail' notification.article.id %}"
+                   class="btn btn-dark">
+                    Перейти к статье
+                </a>
+            </div>
+        {% endif %}
+        <a href="{% url 'mainapp:notifications' %}" class="btn btn-outline-dark mt-3">
+            <i class="fas fa-arrow-left"></i> Назад к списку уведомлений
+        </a>
+    </div>
+
+{% endblock %}
